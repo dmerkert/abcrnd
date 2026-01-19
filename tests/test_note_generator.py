@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 dmerkert
+# Licensed under GPL-3.0 - see LICENSE file for details
 """
 Unit tests for the Music Note Learning Generator.
 Tests all functions and validates output format.

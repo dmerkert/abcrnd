@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 dmerkert
+# Licensed under GPL-3.0 - see LICENSE file for details
 """
 Music Note Learning Generator
 Generates random music note exercises for piano beginners learning treble clef.

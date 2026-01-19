@@ -1,5 +1,9 @@
 # Music Note Learning Generator
 
+![Tests](https://github.com/dmerkert/abcrnd/workflows/Run%20Tests/badge.svg)
+![License](https://img.shields.io/badge/license-GPL--3.0-blue.svg)
+![Python](https://img.shields.io/badge/python-3.8%2B-blue.svg)
+
 A simple command-line tool that generates random music note exercises for piano beginners learning to read treble clef notation. Perfect for creating daily practice exercises in Obsidian-compatible markdown format with ABC notation.
 
 ## Features
@@ -21,7 +25,7 @@ A simple command-line tool that generates random music note exercises for piano 
 Simply clone this repository:
 
 ```bash
-git clone https://github.com/yourusername/abcrnd.git
+git clone https://github.com/dmerkert/abcrnd.git
 cd abcrnd
 ```
 
@@ -80,7 +84,7 @@ The generator creates exercises following these principles:
 ├── .github/
 │   └── workflows/
 │       └── test.yml           # CI/CD pipeline
-├── note_generator_prd.md      # Product requirements document
+├── DESIGN.md                  # Design and requirements document
 ├── LICENSE                    # GPL-3.0 license
 └── README.md                  # This file
 ```
