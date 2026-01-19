@@ -59,7 +59,7 @@ def format_abc_notation(notes, date_str):
 
     # Create two lines with 4 measures each
     line1 = '|'.join(measures[0:4]) + '|'
-    line2 = '|'.join(measures[4:8]) + '|'
+    line2 = '|'.join(measures[4:8]) + '||'
 
     abc_lines.append(line1)
     abc_lines.append(line2)
