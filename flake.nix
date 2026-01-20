@@ -55,6 +55,14 @@
             program = "${note-generator-pkg}/bin/note-generator";
           };
 
+          # App with scale reference included
+          with-scale = {
+            type = "app";
+            program = toString (pkgs.writeShellScript "note-generator-with-scale" ''
+              exec ${note-generator-pkg}/bin/note-generator --scale-reference "$@"
+            '');
+          };
+
           # Test runner app
           tests = {
             type = "app";
@@ -79,9 +87,11 @@
             echo "  Black: $(black --version | head -n1)"
             echo ""
             echo "Commands:"
-            echo "  python note_generator.py    - Run the generator"
-            echo "  python -m unittest discover - Run tests"
-            echo "  black note_generator.py     - Format code"
+            echo "  python note_generator.py              - Run the generator"
+            echo "  python note_generator.py -s           - Run with scale reference"
+            echo "  python note_generator.py --help       - Show help"
+            echo "  python -m unittest discover           - Run tests"
+            echo "  black note_generator.py               - Format code"
             echo ""
 
             # Set custom prompt to indicate nix environment
