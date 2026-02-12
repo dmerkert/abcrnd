@@ -108,9 +108,61 @@ class TestFormatAbcNotation(unittest.TestCase):
         measure_lines = [line for line in lines if '|' in line and not line.startswith(('X:', 'T:', 'M:', 'L:', 'K:'))]
         self.assertEqual(len(measure_lines), 2)
 
+    def test_flexible_note_count(self):
+        """Test that format_abc_notation handles different note counts."""
+        date_str = "2026-01-19"
+
+        # Test with 16 notes (4 measures, 1 line)
+        notes_16 = ['C'] * 16
+        result_16 = note_generator.format_abc_notation(notes_16, date_str)
+        measure_lines_16 = [line for line in result_16.split('\n') if '|' in line and not line.startswith(('X:', 'T:', 'M:', 'L:', 'K:'))]
+        self.assertEqual(len(measure_lines_16), 1)
+        self.assertTrue(measure_lines_16[0].endswith('||'))
+
+        # Test with 48 notes (12 measures, 3 lines)
+        notes_48 = ['C'] * 48
+        result_48 = note_generator.format_abc_notation(notes_48, date_str)
+        measure_lines_48 = [line for line in result_48.split('\n') if '|' in line and not line.startswith(('X:', 'T:', 'M:', 'L:', 'K:'))]
+        self.assertEqual(len(measure_lines_48), 3)
+        self.assertTrue(measure_lines_48[2].endswith('||'))
+        self.assertTrue(measure_lines_48[0].endswith('|'))
+        self.assertFalse(measure_lines_48[0].endswith('||'))
+
+
+class TestScaleReference(unittest.TestCase):
+    """Tests for the generate_scale_reference function."""
+
+    def test_scale_reference_content(self):
+        """Test that scale reference has correct ABC headers and notes."""
+        result = note_generator.generate_scale_reference()
+
+        # Check for required header fields
+        self.assertIn("X: 1", result)
+        self.assertIn("T: Tonleiter", result)
+        self.assertIn("K: C", result)
+
+        # Check for correct German labels and notes
+        # English B should be labeled German H
+        self.assertIn('"H"B', result)
+        # Middle C should be labeled C
+        self.assertIn('"C"C', result)
+        # Higher C should be labeled C
+        self.assertIn('"C"c', result)
+
 
 class TestGenerateMarkdownOutput(unittest.TestCase):
     """Tests for the generate_markdown_output function."""
+
+    def test_include_scale_reference(self):
+        """Test that scale reference is included when requested."""
+        output = note_generator.generate_markdown_output(include_scale_reference=True)
+        self.assertIn("T: Tonleiter", output)
+        self.assertIn('"H"B', output)
+
+    def test_default_no_scale_reference(self):
+        """Test that scale reference is NOT included by default."""
+        output = note_generator.generate_markdown_output()
+        self.assertNotIn("T: Tonleiter", output)
 
     def test_markdown_structure(self):
         """Test that output has proper markdown structure."""
@@ -174,7 +226,7 @@ class TestMainFunction(unittest.TestCase):
     def test_main_output_to_stdout(self):
         """Test that main function outputs to stdout."""
         with patch('sys.stdout', new=StringIO()) as fake_out:
-            note_generator.main()
+            note_generator.main([])
             output = fake_out.getvalue()
 
             # Should produce some output
@@ -187,11 +239,30 @@ class TestMainFunction(unittest.TestCase):
     def test_main_no_trailing_newline(self):
         """Test that main output ends without extra newline."""
         with patch('sys.stdout', new=StringIO()) as fake_out:
-            note_generator.main()
+            note_generator.main([])
             output = fake_out.getvalue()
 
             # Output should not end with double newline
             self.assertFalse(output.endswith('\n\n'))
+
+    def test_main_with_scale_flag(self):
+        """Test that main function handles the -s flag."""
+        with patch('sys.stdout', new=StringIO()) as fake_out:
+            note_generator.main(['-s'])
+            output = fake_out.getvalue()
+
+            # Should contain scale reference
+            self.assertIn('T: Tonleiter', output)
+            self.assertIn('"H"B', output)
+
+    def test_main_with_long_scale_flag(self):
+        """Test that main function handles the --scale-reference flag."""
+        with patch('sys.stdout', new=StringIO()) as fake_out:
+            note_generator.main(['--scale-reference'])
+            output = fake_out.getvalue()
+
+            # Should contain scale reference
+            self.assertIn('T: Tonleiter', output)
 
 
 class TestIntegration(unittest.TestCase):

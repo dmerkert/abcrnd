@@ -21,12 +21,7 @@ jobs:
 
     - name: Run tests
       run: |
-        python -m unittest discover -s tests -p "test_*.py" -v
-
-    - name: Test Summary
-      if: always()
-      run: |
-        if [ $? -eq 0 ]; then
+        if python -m unittest discover -s tests -p "test_*.py" -v; then
           echo "✅ All tests passed!"
         else
           echo "❌ Tests failed!"
