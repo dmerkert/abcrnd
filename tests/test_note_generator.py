@@ -167,6 +167,22 @@ class TestGenerateMarkdownOutput(unittest.TestCase):
         # Measure separators
         self.assertIn('|', output)
 
+    def test_reference_scale_not_included_by_default(self):
+        """Test that reference scale is optional and disabled by default."""
+        output = note_generator.generate_markdown_output()
+        self.assertNotIn('T: Tonleiter', output)
+
+    def test_reference_scale_included_when_enabled(self):
+        """Test that reference scale block is added when option is enabled."""
+        output = note_generator.generate_markdown_output(include_reference_scale=True)
+
+        self.assertIn('T: Tonleiter', output)
+        self.assertIn('"C"C"D"D"E"E"F"F"G"G"A"A"H"B"C"c', output)
+
+        tonleiter_pos = output.find('T: Tonleiter')
+        exercise_pos = output.find('Notenübung')
+        self.assertGreater(exercise_pos, tonleiter_pos)
+
 
 class TestMainFunction(unittest.TestCase):
     """Tests for the main function (CLI interface)."""
@@ -192,6 +208,14 @@ class TestMainFunction(unittest.TestCase):
 
             # Output should not end with double newline
             self.assertFalse(output.endswith('\n\n'))
+
+    def test_main_with_reference_scale_option(self):
+        """Test CLI flag for including the reference scale."""
+        with patch('sys.stdout', new=StringIO()) as fake_out:
+            note_generator.main(['--include-scale'])
+            output = fake_out.getvalue()
+
+            self.assertIn('T: Tonleiter', output)
 
 
 class TestIntegration(unittest.TestCase):

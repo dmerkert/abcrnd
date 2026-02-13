@@ -13,6 +13,7 @@ A simple command-line tool that generates random music note exercises for piano 
 - Outputs in Obsidian-compatible markdown with ABC notation
 - Creates properly formatted sheet music with 4/4 time signature
 - Zero configuration - just run and get instant practice exercises
+- Optional C-c reference scale block with note names for easier warm-up learning
 - No external dependencies - uses only Python standard library
 
 ## Requirements
@@ -35,6 +36,18 @@ Run the script directly to generate a new exercise:
 
 ```bash
 python note_generator.py
+```
+
+Optional: Include a C-c reference scale with note names before the random exercise:
+
+```bash
+python note_generator.py --include-scale
+```
+
+If you use Nix flakes, this also works via `nix run`:
+
+```bash
+nix run . -- --include-scale
 ```
 
 Save the output to a file:
