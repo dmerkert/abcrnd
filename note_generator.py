@@ -7,6 +7,7 @@ Generates random music note exercises for piano beginners learning treble clef.
 Output is in Obsidian-compatible markdown format with ABC notation.
 """
 
+import argparse
 import random
 from datetime import date
 
@@ -67,9 +68,24 @@ def format_abc_notation(notes, date_str):
     return '\n'.join(abc_lines)
 
 
-def generate_markdown_output():
+def generate_reference_scale_abc():
+    """Generate the reference C-c scale ABC block with note names."""
+    return '\n'.join([
+        "X: 1",
+        "T: Tonleiter",
+        "M: 4/4",
+        "L: 1/4",
+        "K: C",
+        '"C"C"D"D"E"E"F"F"G"G"A"A"H"B"C"c',
+    ])
+
+
+def generate_markdown_output(include_reference_scale=False):
     """
     Generate complete markdown output with date title and ABC notation.
+
+    Args:
+        include_reference_scale: Whether to prepend a C-c reference scale block
 
     Returns:
         String containing complete markdown document
@@ -85,7 +101,15 @@ def generate_markdown_output():
     abc_content = format_abc_notation(notes, date_str)
 
     # Build markdown document
-    markdown = f"# {date_str} Notenübung\n\n"
+    markdown = ""
+
+    if include_reference_scale:
+        markdown += "# Tonleiter Referenz\n\n"
+        markdown += "```abc\n"
+        markdown += generate_reference_scale_abc() + "\n"
+        markdown += "```\n\n"
+
+    markdown += f"# {date_str} Notenübung\n\n"
     markdown += "```abc\n"
     markdown += abc_content + "\n"
     markdown += "```\n"
@@ -93,11 +117,27 @@ def generate_markdown_output():
     return markdown
 
 
-def main():
+def parse_args(argv=None):
+    """Parse CLI arguments."""
+    parser = argparse.ArgumentParser(
+        description="Generate random ABC note exercises for piano beginners."
+    )
+    parser.add_argument(
+        "--include-scale",
+        action="store_true",
+        help="Add a C-c scale reference block before the random exercise.",
+    )
+    return parser.parse_args(argv)
+
+
+def main(argv=None):
     """Main entry point for the script."""
-    output = generate_markdown_output()
+    args = parse_args(argv)
+    output = generate_markdown_output(include_reference_scale=args.include_scale)
     print(output, end='')
 
 
 if __name__ == "__main__":
-    main()
+    import sys
+
+    main(sys.argv[1:])

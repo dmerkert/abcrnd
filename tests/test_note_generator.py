@@ -167,6 +167,33 @@ class TestGenerateMarkdownOutput(unittest.TestCase):
         # Measure separators
         self.assertIn('|', output)
 
+    def test_reference_scale_not_included_by_default(self):
+        """Test that reference scale is optional and disabled by default."""
+        output = note_generator.generate_markdown_output()
+        self.assertNotIn('T: Tonleiter', output)
+
+    def test_reference_scale_included_when_enabled(self):
+        """Test that reference scale block is added when option is enabled."""
+        output = note_generator.generate_markdown_output(include_reference_scale=True)
+
+        self.assertIn('T: Tonleiter', output)
+        self.assertIn('"C"C"D"D"E"E"F"F"G"G"A"A"H"B"C"c', output)
+
+        tonleiter_pos = output.find('T: Tonleiter')
+        exercise_pos = output.find('Notenübung')
+        self.assertGreater(exercise_pos, tonleiter_pos)
+
+
+class TestParseArgs(unittest.TestCase):
+    """Tests for CLI argument parsing."""
+
+    def test_parse_args_uses_sys_argv_when_omitted(self):
+        """parse_args(None) should read flags from sys.argv like argparse defaults."""
+        with patch.object(sys, 'argv', ['note_generator.py', '--include-scale']):
+            args = note_generator.parse_args()
+
+        self.assertTrue(args.include_scale)
+
 
 class TestMainFunction(unittest.TestCase):
     """Tests for the main function (CLI interface)."""
@@ -174,7 +201,7 @@ class TestMainFunction(unittest.TestCase):
     def test_main_output_to_stdout(self):
         """Test that main function outputs to stdout."""
         with patch('sys.stdout', new=StringIO()) as fake_out:
-            note_generator.main()
+            note_generator.main([])
             output = fake_out.getvalue()
 
             # Should produce some output
@@ -187,11 +214,19 @@ class TestMainFunction(unittest.TestCase):
     def test_main_no_trailing_newline(self):
         """Test that main output ends without extra newline."""
         with patch('sys.stdout', new=StringIO()) as fake_out:
-            note_generator.main()
+            note_generator.main([])
             output = fake_out.getvalue()
 
             # Output should not end with double newline
             self.assertFalse(output.endswith('\n\n'))
+
+    def test_main_with_reference_scale_option(self):
+        """Test CLI flag for including the reference scale."""
+        with patch('sys.stdout', new=StringIO()) as fake_out:
+            note_generator.main(['--include-scale'])
+            output = fake_out.getvalue()
+
+            self.assertIn('T: Tonleiter', output)
 
 
 class TestIntegration(unittest.TestCase):
