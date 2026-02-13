@@ -184,13 +184,24 @@ class TestGenerateMarkdownOutput(unittest.TestCase):
         self.assertGreater(exercise_pos, tonleiter_pos)
 
 
+class TestParseArgs(unittest.TestCase):
+    """Tests for CLI argument parsing."""
+
+    def test_parse_args_uses_sys_argv_when_omitted(self):
+        """parse_args(None) should read flags from sys.argv like argparse defaults."""
+        with patch.object(sys, 'argv', ['note_generator.py', '--include-scale']):
+            args = note_generator.parse_args()
+
+        self.assertTrue(args.include_scale)
+
+
 class TestMainFunction(unittest.TestCase):
     """Tests for the main function (CLI interface)."""
 
     def test_main_output_to_stdout(self):
         """Test that main function outputs to stdout."""
         with patch('sys.stdout', new=StringIO()) as fake_out:
-            note_generator.main()
+            note_generator.main([])
             output = fake_out.getvalue()
 
             # Should produce some output
@@ -203,7 +214,7 @@ class TestMainFunction(unittest.TestCase):
     def test_main_no_trailing_newline(self):
         """Test that main output ends without extra newline."""
         with patch('sys.stdout', new=StringIO()) as fake_out:
-            note_generator.main()
+            note_generator.main([])
             output = fake_out.getvalue()
 
             # Output should not end with double newline

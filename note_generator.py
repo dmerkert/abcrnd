@@ -127,7 +127,7 @@ def parse_args(argv=None):
         action="store_true",
         help="Add a C-c scale reference block before the random exercise.",
     )
-    return parser.parse_args(argv if argv is not None else [])
+    return parser.parse_args(argv)
 
 
 def main(argv=None):
